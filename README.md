@@ -3,4 +3,4 @@ First Javascript game
 
 
 
-Octubre 2022
+October 2022
