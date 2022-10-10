@@ -91,7 +91,18 @@ window.addEventListener('load', function(){
 
     }
     class UI{
-
+        constructor(game){
+            this.game = game;
+            this.fontSize = 20;
+            this.fontFamily = 'Arial';
+            this.color = 'yellow';
+        }
+        draw(context){
+            context.fillStyle = this.color;
+            for (let i = 0; i < this.game.ammo; i++){
+                context.fillRect(20+5 * i, 50, 3, 20)
+            }
+        }
     }
     class Game{
         constructor(width, height){
@@ -99,24 +110,40 @@ window.addEventListener('load', function(){
             this.height = height;
             this.player = new Player(this);
             this.input = new InputHandler(this); 
+            this.ui = new UI(this);
             this.keys = [];
             this.ammo = 20;
+            this.maxAmmo = 50;
+            this.ammoTimer = 0;
+            this.ammoInterval = 500;
         }
-        update(){
+        update(deltaTime){
             this.player.update();
+            if(this.ammoTimer > this.ammoInterval){
+                if(this.ammo < this.maxAmmo) this.ammo++;
+                this.ammoTimer = 0;
+            } else {
+                this.ammoTimer += deltaTime;
+            }
         }
         draw(context){
             this.player.draw(context);
-        }
+            this.ui.draw(context);
+        } 
     }
 
     const game = new Game(canvas.width, canvas.height);
+    let lastTime = 0;
+
     //Animation loop
-    function animate(){
+    function animate(timeStamp){
+        const deltaTime = timeStamp - lastTime;
+        
+        lastTime = timeStamp;
         contexto.clearRect(0,0, canvas.width, canvas.height)
-        game.update();
+        game.update(deltaTime);
         game.draw(contexto);
         requestAnimationFrame(animate)
     }
-    animate();
+    animate(0);
 });
